@@ -4,6 +4,8 @@ Code and data for the paper *"Physics Informed Neural Networks for drug release
 prediction from PLGA particles"* (submitted to the International Journal of
 Pharmaceutics).
 
+Archived at https://doi.org/10.5281/zenodo.21924123
+
 The framework couples two networks: **PhysicsNet**, which learns the universal
 dimensionless solution of Fickian diffusion in a sphere from the PDE residual
 alone, and **DescriptorNet**, which maps formulation descriptors to effective
@@ -24,8 +26,9 @@ descriptornet_datasetA/        DescriptorNet BHO + retraining, per dataset
 descriptornet_datasetB/
 descriptornet_datasetC/
 descriptornet_supervised/      Directly supervised diffusivity baseline
-fit_Cracnk.ipynb               Crank analytical fits to measured profiles
+fit_Crank.ipynb                Crank analytical fits to measured profiles
 plots/                         Paper figures (PNG + PDF)
+LICENSE                        MIT license (code)
 ```
 
 Each `*_bho/` folder contains the Optuna log (`bho_log.csv`), the study object
@@ -38,8 +41,8 @@ Each `*_bho/` folder contains the Optuna log (`bho_log.csv`), the study object
   the dataset compiled by **Bao et al.**, *A dataset on formulation parameters
   and characteristics of drug-loaded PLGA microparticles*, Sci. Data (2025),
   https://doi.org/10.1038/s41597-025-04621-9 — 321 drug–polymer formulations.
-  These files are redistributed here for reproducibility; please cite Bao et
-  al. when using them.
+  These files are redistributed here under CC BY 4.0, with attribution to the
+  original authors.
 - `crank_fit.xlsx` — effective diffusivities obtained by fitting Crank's
   analytical solution to each measured profile (this work).
 - `release_dataset_even.xlsx` / `release_dataset_with_Crank_release_even.xlsx`
@@ -52,7 +55,7 @@ Each `*_bho/` folder contains the Optuna log (`bho_log.csv`), the study object
    (pre-trained weights included: `physicsnet_pretrained.pt`).
 2. **Dataset generation** — `datasetA_generator.ipynb`,
    `datasetB_generator.ipynb`, `datasetC_generator.ipynb`, and
-   `fit_Cracnk.ipynb` for the Crank fits.
+   `fit_Crank.ipynb` for the Crank fits.
 3. **Hyperparameter optimization** — `*_bho.py` in each model folder
    (Optuna, TPE sampler).
 4. **Final retraining and evaluation** — `*_retraining.ipynb` in each model
@@ -65,3 +68,8 @@ GPU time.
 
 Python 3.10+, PyTorch, NumPy, pandas, scikit-learn, Optuna, openpyxl,
 matplotlib.
+
+## License
+
+Code is released under the MIT License (see `LICENSE`). The redistributed Bao
+et al. data files are covered by CC BY 4.0, as noted above.
