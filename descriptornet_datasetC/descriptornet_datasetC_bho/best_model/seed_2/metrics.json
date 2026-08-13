@@ -1,0 +1,15 @@
+{
+  "seed": 2,
+  "test_MSE": 0.055099877227536016,
+  "test_MALE": 0.4208984673023224,
+  "epochs": 1000,
+  "elapsed_s": 427.6,
+  "config": {
+    "depth": 3,
+    "width": 256,
+    "activation": "tanh",
+    "lr": 0.0018049050544757684,
+    "batch_size": 64,
+    "weight_decay": 0.0
+  }
+}

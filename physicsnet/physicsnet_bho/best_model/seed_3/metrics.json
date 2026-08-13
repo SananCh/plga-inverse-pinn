@@ -1,0 +1,15 @@
+{
+  "seed": 3,
+  "mean_err": 0.0015664909439391738,
+  "max_err": 0.008405893884209759,
+  "config": {
+    "depth": 3,
+    "width": 256,
+    "activation": "silu",
+    "lr": 0.00011487565177002337,
+    "w_ic": 10,
+    "rho_bias": 2,
+    "fo_bias": 1
+  },
+  "epochs": 10000
+}
