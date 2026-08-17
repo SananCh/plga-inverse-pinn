@@ -1,8 +1,7 @@
 # Inverse PINN for Drug Release Prediction from PLGA Microspheres
 
 Code and data for the paper *"Physics Informed Neural Networks for drug release
-prediction from PLGA particles"* (submitted to the International Journal of
-Pharmaceutics).
+prediction from PLGA particles"*.
 
 Archived at https://doi.org/10.5281/zenodo.21924123
 
