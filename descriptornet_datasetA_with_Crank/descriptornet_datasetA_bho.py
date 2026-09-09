@@ -38,7 +38,7 @@ import torch.nn as nn
 TRAIN_DIR    = "../datasetA_training_data"
 TEST_DIR     = "../datasetA_testing_data"
 NET2_WEIGHTS = "physicsnet/physicsnet_pretrained.pt"
-OUTPUT_DIR   = "descriptornet_datasetA_bho"
+OUTPUT_DIR   = "descriptornet_datasetA_bho_with_Crank"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -138,25 +138,17 @@ class PhysicsNet(nn.Module):
 # ============================================================
 # BRIDGE + INTEGRATION
 # ============================================================
+def crank_release_torch(Fo, n_terms=200):
+    n = torch.arange(1, n_terms + 1, device=Fo.device, dtype=Fo.dtype)
+    exponent = -(n**2) * (torch.pi**2) * Fo.unsqueeze(-1)   # (N, T, M)
+    series = torch.sum(torch.exp(exponent) / n**2, dim=-1)
+    return 1.0 - (6.0 / torch.pi**2) * series
+
 def predicted_release(net2, D_eff, t_abs, R):
-    N, T  = t_abs.shape
-    device = t_abs.device
-    n_rho = N_RHO_INTEGRATION
-
-    Fo       = torch.clamp(D_eff.view(N,1) * t_abs / R.view(N,1)**2,
-                           min=0.0, max=1.5)
-    rho_grid = torch.linspace(0, 1, n_rho, device=device)
-
-    Fo_exp  = Fo.view(N, T, 1).expand(N, T, n_rho)
-    rho_exp = rho_grid.view(1, 1, n_rho).expand(N, T, n_rho)
-
-    u         = net2(rho_exp.reshape(-1,1),
-                     Fo_exp.reshape(-1,1)).view(N, T, n_rho)
-    integrand = u * rho_grid.view(1, 1, n_rho)**2
-    integral  = torch.trapz(integrand, rho_grid, dim=2)
-    return 1.0 - 3.0 * integral
-
-
+    N, T = t_abs.shape
+    Fo = D_eff.view(N, 1) * t_abs / R.view(N, 1) ** 2
+    return crank_release_torch(Fo)
+    
 # ============================================================
 # EVALUATION (no grad, per-particle)
 # ============================================================
@@ -352,7 +344,7 @@ def main():
     full_train = make_tensors(train_raw, all_idx, desc_mean, desc_std)
 
     # Load frozen PhysicsNet
-    net2 = load_frozen_net2()
+    net2 = None
 
     # ---- BHO ----
     print(f"\nStarting BHO: {BHO_N_TRIALS} trials x {BHO_EPOCHS} epochs")

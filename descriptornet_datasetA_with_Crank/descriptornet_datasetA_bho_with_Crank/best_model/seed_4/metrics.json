@@ -1,0 +1,14 @@
+{
+  "seed": 4,
+  "test_MALE": 0.002963355742394924,
+  "test_MSE": 2.256213690543518e-06,
+  "epochs": 200,
+  "elapsed_s": 16.1,
+  "config": {
+    "depth": 4,
+    "width": 128,
+    "activation": "gelu",
+    "lr": 0.0006570046297176885,
+    "batch_size": 256
+  }
+}

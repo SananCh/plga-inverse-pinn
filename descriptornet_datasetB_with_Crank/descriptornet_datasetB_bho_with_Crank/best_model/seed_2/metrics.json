@@ -1,0 +1,15 @@
+{
+  "seed": 2,
+  "test_MSE": Infinity,
+  "test_MALE": Infinity,
+  "epochs": 1000,
+  "elapsed_s": 320.1,
+  "config": {
+    "depth": 3,
+    "width": 256,
+    "activation": "gelu",
+    "lr": 0.0019372183918496529,
+    "batch_size": 32,
+    "weight_decay": 0.0
+  }
+}

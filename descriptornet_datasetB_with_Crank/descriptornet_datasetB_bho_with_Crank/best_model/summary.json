@@ -1,0 +1,42 @@
+{
+  "best_config": {
+    "depth": 3,
+    "width": 256,
+    "activation": "gelu",
+    "lr": 0.0019372183918496529,
+    "batch_size": 32,
+    "weight_decay": 0.0
+  },
+  "bho_cv_mse": 0.02826800480117936,
+  "seed_results": [
+    {
+      "seed": 0,
+      "MSE": Infinity,
+      "MALE": Infinity
+    },
+    {
+      "seed": 1,
+      "MSE": 0.05834159451096996,
+      "MALE": 1.1380729675292969
+    },
+    {
+      "seed": 2,
+      "MSE": Infinity,
+      "MALE": Infinity
+    },
+    {
+      "seed": 3,
+      "MSE": 0.04232102091319736,
+      "MALE": 0.6999857425689697
+    },
+    {
+      "seed": 4,
+      "MSE": 0.040698505330296675,
+      "MALE": 0.41129210591316223
+    }
+  ],
+  "MSE_mean": 0.04712037358482133,
+  "MSE_std": 0.00796220189433659,
+  "MALE_mean": 0.7497836053371429,
+  "MALE_std": 0.29878919609548704
+}
