@@ -1,8 +1,0 @@
-{
-  "depth": 6,
-  "width": 256,
-  "activation": "tanh",
-  "lr": 0.0027730839047650853,
-  "batch_size": 128,
-  "weight_decay": 0.0001
-}

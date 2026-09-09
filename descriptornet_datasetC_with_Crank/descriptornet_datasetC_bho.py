@@ -163,8 +163,10 @@ def eval_release_mse(net1, net2, loader, rho_grid):
     n_batches = 0
     for desc_b, t_b, R_b, c_b in loader:
         desc_b, t_b, R_b, c_b = [x.to(DEVICE) for x in [desc_b, t_b, R_b, c_b]]
-        D_pred  = 10.0 ** net1(desc_b)
-        Fo      = torch.clamp(D_pred * t_b / R_b**2, 0.0)
+        log10_D = torch.clamp(net1(desc_b), min=-20.0, max=-7.0)
+        D_pred = 10.0 ** log10_D
+
+        Fo      = torch.clamp(D_pred * t_b / R_b**2, 0.0, 1.5)
         release = integrate_release(net2, Fo, rho_grid)
         mse     = torch.mean((release - c_b)**2).item()
         if not np.isfinite(mse):
@@ -176,14 +178,14 @@ def eval_release_mse(net1, net2, loader, rho_grid):
 
 @torch.no_grad()
 def eval_male(net1, X_part_t, D_part_t):
-    """Diagnostic only — never used for selection."""
     net1.eval()
-    D_pred = torch.clamp(10.0 ** net1(X_part_t), min=1e-30)
-    valid  = D_part_t > 0
+    valid = D_part_t > 0
     if valid.sum() == 0:
         return float("inf")
+
+    log10_D_pred = torch.clamp(net1(X_part_t), min=-20.0, max=-7.0)
     male = torch.mean(
-        torch.abs(torch.log10(D_pred[valid]) - torch.log10(D_part_t[valid]))
+        torch.abs(log10_D_pred[valid] - torch.log10(D_part_t[valid]))
     ).item()
     return male if np.isfinite(male) else float("inf")
 
@@ -226,8 +228,9 @@ def train_one(net1, net2, loader, val_loader, epochs, rho_grid,
         for desc_b, t_b, R_b, c_b in loader:
             desc_b, t_b, R_b, c_b = [x.to(DEVICE) for x in [desc_b, t_b, R_b, c_b]]
             optimizer.zero_grad()
-            D_pred  = 10.0 ** net1(desc_b)
-            Fo      = torch.clamp(D_pred * t_b / R_b**2, 0.0)
+            log10_D = torch.clamp(net1(desc_b), min=-20.0, max=-7.0)
+            D_pred = 10.0 ** log10_D
+            Fo      = torch.clamp(D_pred * t_b / R_b**2, 0.0, 1.5)
             release = integrate_release(net2, Fo, rho_grid)
             loss    = torch.mean((release - c_b)**2)
             if torch.isnan(loss):
