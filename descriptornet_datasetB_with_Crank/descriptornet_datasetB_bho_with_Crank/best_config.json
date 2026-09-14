@@ -1,8 +1,8 @@
 {
-  "depth": 3,
-  "width": 256,
+  "depth": 4,
+  "width": 128,
   "activation": "gelu",
-  "lr": 0.0019372183918496529,
-  "batch_size": 32,
+  "lr": 0.007320062204854356,
+  "batch_size": 64,
   "weight_decay": 0.0
 }

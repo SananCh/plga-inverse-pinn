@@ -1,5 +1,5 @@
 """
-BHO + multi-seed training for DescriptorNet on Dataset B.
+BHO + multi-seed training for DescriptorNet on Dataset C.
 
 Simplified structure:
   - BHO objective: mean validation MSE (release) across 5-fold CV.

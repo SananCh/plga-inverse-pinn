@@ -1,15 +1,15 @@
 {
   "seed": 3,
-  "test_MSE": 0.04232102091319736,
-  "test_MALE": 0.6999857425689697,
+  "test_MSE": 0.04610744528655036,
+  "test_MALE": 0.4762594699859619,
   "epochs": 1000,
-  "elapsed_s": 592.1,
+  "elapsed_s": 421.7,
   "config": {
-    "depth": 3,
-    "width": 256,
+    "depth": 4,
+    "width": 128,
     "activation": "gelu",
-    "lr": 0.0019372183918496529,
-    "batch_size": 32,
+    "lr": 0.007320062204854356,
+    "batch_size": 64,
     "weight_decay": 0.0
   }
 }
