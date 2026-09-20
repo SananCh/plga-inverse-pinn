@@ -11,28 +11,55 @@ alone, and **DescriptorNet**, which maps formulation descriptors to effective
 diffusivity. Coupled through the Fourier number, they predict full release
 profiles and recover effective diffusivity without diffusivity labels.
 
+PhysicsNet is trained from the PDE residual only. Analytical (Crank series) and
+numerical solutions are used **for verification and for the ablation described
+below**, never inside the model itself — the claim under test is that the
+approach carries over to systems with no known closed-form solution.
+
 ## Repository structure
 
 ```
-plga_dataset/                  Source and derived data (see Data section)
-physicsnet/                    PhysicsNet pre-training, BHO, retraining, weights
-datasetA_generator.ipynb       Synthetic benchmark generator (Dataset A)
-datasetB_generator.ipynb       Idealized real dataset generator (Dataset B)
-datasetC_generator.ipynb       Real dataset preparation (Dataset C)
-datasetA_training_data/        Generated Dataset A arrays (.npy)
+plga_dataset/                       Source and derived data (see Data section)
+physicsnet/                         PhysicsNet pre-training, BHO, retraining, weights
+datasetA_generator.ipynb            Synthetic benchmark generator (Dataset A)
+datasetB_generator.ipynb            Idealized real dataset generator (Dataset B)
+datasetC_generator.ipynb            Real dataset preparation (Dataset C)
+datasetA_training_data/             Generated Dataset A arrays (.npy)
 datasetA_testing_data/
-descriptornet_datasetA/        DescriptorNet BHO + retraining, per dataset
+fit_Crank.ipynb                     Crank analytical fits to measured profiles
+
+descriptornet_datasetA/             DescriptorNet + PhysicsNet, per dataset
 descriptornet_datasetB/
 descriptornet_datasetC/
-descriptornet_supervised/      Directly supervised diffusivity baseline
-fit_Crank.ipynb                Crank analytical fits to measured profiles
-plots/                         Paper figures (PNG + PDF)
-LICENSE                        MIT license (code)
+descriptornet_datasetA_with_Crank/  Same, with the analytical Crank series
+descriptornet_datasetB_with_Crank/  substituted for PhysicsNet (ablation)
+descriptornet_datasetC_with_Crank/
+descriptornet_supervised/           Directly supervised diffusivity baseline
+
+plots/                              Paper figures (PNG + PDF)
+LICENSE                             MIT license (code)
 ```
 
 Each `*_bho/` folder contains the Optuna log (`bho_log.csv`), the study object
 (`study.pkl`), the selected configuration (`best_config.json`), and
-`best_model/` with per-seed weights, metrics, and training curves.
+`best_model/` with per-seed weights, metrics, training curves, and a
+`summary.json` aggregating the five seeds.
+
+## The `_with_Crank` ablation
+
+The `*_with_Crank/` folders repeat each DescriptorNet experiment with the only
+change being the forward release operator: the frozen PhysicsNet surrogate and
+its quadrature over the concentration field are replaced by the truncated Crank
+series (200 terms) evaluated directly in the loss. Everything else — descriptor
+inputs, data splits, Optuna search space, five-seed retraining protocol,
+evaluation metrics — is identical, so the pair isolates the cost of using a
+learned surrogate instead of the exact solution on the one problem where the
+exact solution happens to exist.
+
+The ablation runs also carry the optimization diagnostics: the loss/gradient
+landscape and the divergence trajectories (`divergence_diag.npz`,
+`descriptornet_datasetC_retraining_no_cap.ipynb`), which motivate the gradient
+cap used in the capped retraining notebooks.
 
 ## Data
 
@@ -51,7 +78,8 @@ Each `*_bho/` folder contains the Optuna log (`bho_log.csv`), the study object
 ## Reproducing the pipeline
 
 1. **PhysicsNet pre-training** — `physicsnet/physicsnet_pretrain.py`
-   (pre-trained weights included: `physicsnet_pretrained.pt`).
+   (pre-trained weights included: `physicsnet_pretrained.pt`), then
+   `physicsnet/physicsnet_bho.py` and `physicsnet/physicsnet_retraining.ipynb`.
 2. **Dataset generation** — `datasetA_generator.ipynb`,
    `datasetB_generator.ipynb`, `datasetC_generator.ipynb`, and
    `fit_Crank.ipynb` for the Crank fits.
@@ -59,6 +87,11 @@ Each `*_bho/` folder contains the Optuna log (`bho_log.csv`), the study object
    (Optuna, TPE sampler).
 4. **Final retraining and evaluation** — `*_retraining.ipynb` in each model
    folder, using the configuration in `best_config.json` over five seeds.
+   Where a `_capped` / `_no_cap` pair exists, the capped notebook is the one
+   reported in the paper.
+5. **Inference from saved weights** — `import_nets_and_infere.ipynb` in each
+   DescriptorNet folder loads the frozen networks and reproduces the reported
+   predictions without retraining.
 
 Trained on a single NVIDIA H100; full pipeline requires under two hours of
 GPU time.
